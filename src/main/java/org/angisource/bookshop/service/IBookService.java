@@ -3,6 +3,7 @@ package org.angisource.bookshop.service;
 import org.angisource.bookshop.entity.Book;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IBookService {
 
@@ -14,5 +15,5 @@ public interface IBookService {
 
     void delete(Book book);
 
-    Book findByTitle(String title);
+    Optional<Book> findFirstByTitle(String title);
 }

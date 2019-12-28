@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService implements IBookService {
@@ -34,7 +35,7 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book findByTitle(String title) {
-        return bookRepository.findbyTitle(title);
+    public Optional<Book> findFirstByTitle(String title) {
+        return bookRepository.findFirstByTitle(title);
     }
 }

@@ -37,7 +37,7 @@ class BookShopApplicationTests {
         book.setTitle(BOOK_NAME);
         bookRepository.save(book);
 
-        Optional<Book> foundUser = bookRepository.findOneByName(BOOK_NAME);
+        Optional<Book> foundUser = bookRepository.findFirstByTitle(BOOK_NAME);
 
         assertThat(foundUser.isPresent()).isEqualTo(true);
 
