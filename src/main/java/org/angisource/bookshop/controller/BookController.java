@@ -7,14 +7,13 @@ import org.angisource.bookshop.exception.NotFoundException;
 import org.angisource.bookshop.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -24,11 +23,8 @@ import java.util.List;
 public class BookController {
 
     private static Logger LOGGER = LoggerFactory.getLogger(BookController.class);
-    @Autowired
     private final BookService bookService;
 
-    //@GetMapping(path = "/all")
-    //@RequestMapping(value = "/all", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
     @RequestMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
     @ResponseBody
     public ResponseEntity<List<Book>> getAll() {
@@ -40,13 +36,14 @@ public class BookController {
     @RequestMapping(value = "/{id:[\\d]+}", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
     public Book getById(@PathVariable("id") long id) {
         LOGGER.debug("************** Get Book with id: " + id + " **************");
-        return bookService.findById(id).orElseThrow(() -> new NotFoundException("Book[id: " + id + "] not founded"));
+        return bookService.findById(id).orElseThrow(() -> new NotFoundException("The book with id=" + id + " has not been found"));
     }
 
-    @PostMapping(path = "/save")
-    public ResponseEntity<Book> create(@RequestBody Book book) throws URISyntaxException {
+    @RequestMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.POST})
+    public ResponseEntity<Book> create(@Validated @RequestBody Book book) {
         LOGGER.debug("**************create**************");
         Book createdBook = bookService.create(book);
+        LOGGER.info(createdBook.toString());
         if (createdBook == null) {
             return ResponseEntity.notFound().build();
         } else {
