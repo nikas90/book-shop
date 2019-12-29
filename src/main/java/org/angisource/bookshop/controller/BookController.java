@@ -37,8 +37,8 @@ public class BookController {
         return ResponseEntity.ok().body(books);
     }
 
-    @RequestMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
-    public Book getById(@PathVariable Long id) {
+    @RequestMapping(value = "/{id:[\\d]+}", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
+    public Book getById(@PathVariable("id") long id) {
         LOGGER.debug("************** Get Book with id: " + id + " **************");
         return bookService.findById(id).orElseThrow(() -> new NotFoundException("Book[id: " + id + "] not founded"));
     }
