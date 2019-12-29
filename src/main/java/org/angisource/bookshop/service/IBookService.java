@@ -9,6 +9,8 @@ public interface IBookService {
 
     List<Book> findAll();
 
+    Optional<Book> findById(Long id);
+
     Book create(Book book);
 
     void delete(Long id);

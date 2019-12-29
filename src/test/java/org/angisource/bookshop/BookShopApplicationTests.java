@@ -35,15 +35,19 @@ class BookShopApplicationTests {
     public void givenUserInDBWhenFindOneByNameThenReturnOptionalWithUser() {
         Book book = new Book();
         book.setTitle(BOOK_NAME);
+        book.setAuthor("Nica Madalin");
+        book.setIsbn("325424");
+        book.setDescription("cccc");
         bookRepository.save(book);
 
-        Optional<Book> foundUser = bookRepository.findFirstByTitle(BOOK_NAME);
+        Optional<Book> foundBook = bookRepository.findFirstByTitle(BOOK_NAME);
 
-        assertThat(foundUser.isPresent()).isEqualTo(true);
+        assertThat(foundBook.isPresent()).isEqualTo(true);
 
-        assertThat(foundUser
+        assertThat(foundBook
                 .get()
                 .getTitle()).isEqualTo(BOOK_NAME);
+        bookRepository.delete(book);
     }
 
 }

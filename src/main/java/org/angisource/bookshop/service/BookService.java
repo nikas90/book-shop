@@ -20,6 +20,11 @@ public class BookService implements IBookService {
     }
 
     @Override
+    public Optional<Book> findById(Long id) {
+        return bookRepository.findById(id);
+    }
+
+    @Override
     public Book create(Book book) {
         return bookRepository.save(book);
     }
