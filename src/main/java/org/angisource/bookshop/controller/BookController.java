@@ -8,6 +8,7 @@ import org.angisource.bookshop.response.ApiResponse;
 import org.angisource.bookshop.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/book")
@@ -48,19 +50,22 @@ public class BookController {
     }
 
     @RequestMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.POST})
-    public ResponseEntity<Book> create(@Validated @RequestBody Book book) {
+    public ResponseEntity<Object> create(@Validated @RequestBody Book book, WebRequest request) {
         LOGGER.debug("**************create**************");
         Book createdBook = bookService.create(book);
         if (createdBook == null) {
-            return ResponseEntity.notFound().build();
+            ApiResponse response = new ApiResponse(book, ((ServletWebRequest) request).getRequest().getRequestURI(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(response);
         } else {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}")
                     .buildAndExpand(createdBook.getId())
                     .toUri();
-
-            return ResponseEntity.created(uri)
-                    .body(createdBook);
+            System.out.println(uri);
+            Map<String, String[]> requestMapper = request.getParameterMap();
+            System.out.println(requestMapper);
+            ApiResponse response = new ApiResponse(createdBook, ((ServletWebRequest) request).getRequest().getRequestURI(), HttpStatus.CREATED);
+            return ResponseEntity.created(uri).body(response);
         }
     }
 
@@ -69,6 +74,19 @@ public class BookController {
         LOGGER.debug("**************delete**************");
         bookService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/all-pageable", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
+    @ResponseBody
+    public ResponseEntity<Object> getAllPageable(@RequestParam(defaultValue = "0") Integer page_no,
+                                                 @RequestParam(defaultValue = "10") Integer page_size,
+                                                 @RequestParam(defaultValue = "id") String sort_by,
+                                                 @RequestParam(defaultValue = "ASC") String sort_type,
+                                                 WebRequest request) {
+        LOGGER.debug("************** getAllBooks **************");
+        Page<Book> pageBooks = bookService.findAll(page_no, page_size, sort_by, sort_type);
+        ApiResponse response = new ApiResponse(pageBooks, ((ServletWebRequest) request).getRequest().getRequestURI(), HttpStatus.OK);
+        return ResponseEntity.ok().body(response);
     }
 
 }
