@@ -3,10 +3,7 @@ package org.angisource.bookshop.service;
 import org.angisource.bookshop.entity.Book;
 import org.angisource.bookshop.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,6 +56,18 @@ public class BookService implements IBookService {
         }
         Pageable paging = PageRequest.of(pageNo, pageSize, sortOpts);
         Page<Book> pagedResult = bookRepository.findAll(paging);
+        return pagedResult;
+    }
+
+    @Override
+    public Page<Book> findAllV2(Pageable pageable) {
+        Page<Book> pagedResult = bookRepository.findAll(pageable);
+        return pagedResult;
+    }
+
+    @Override
+    public Slice<Book> findAllV3(Pageable pageable) {
+        Slice<Book> pagedResult = bookRepository.findAll(pageable);
         return pagedResult;
     }
 }

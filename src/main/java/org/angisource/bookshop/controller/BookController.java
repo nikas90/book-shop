@@ -9,6 +9,11 @@ import org.angisource.bookshop.service.BookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -85,6 +90,37 @@ public class BookController {
                                                  WebRequest request) {
         LOGGER.debug("************** getAllBooks **************");
         Page<Book> pageBooks = bookService.findAll(page_no, page_size, sort_by, sort_type);
+        ApiResponse response = new ApiResponse(pageBooks, ((ServletWebRequest) request).getRequest().getRequestURI(), HttpStatus.OK);
+        return ResponseEntity.ok().body(response);
+    }
+
+
+    @RequestMapping(value = "/all-pageable2", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
+    @ResponseBody
+    public ResponseEntity<Object> getAllPageableV2(@PageableDefault(page = 0, size = 20)
+                                                   @SortDefault.SortDefaults({
+                                                           @SortDefault(sort = "id", direction = Sort.Direction.ASC),
+                                                           @SortDefault(sort = "title", direction = Sort.Direction.DESC)
+                                                   }) Pageable pageable,
+                                                   WebRequest request) {
+
+        LOGGER.debug("************** getAllBooks **************");
+        Page<Book> pageBooks = bookService.findAllV2(pageable);
+        ApiResponse response = new ApiResponse(pageBooks, ((ServletWebRequest) request).getRequest().getRequestURI(), HttpStatus.OK);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @RequestMapping(value = "/all-pageable3", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET})
+    @ResponseBody
+    public ResponseEntity<Object> getAllPageableV3(@PageableDefault(page = 0, size = 20)
+                                                   @SortDefault.SortDefaults({
+                                                           @SortDefault(sort = "id", direction = Sort.Direction.ASC),
+                                                           @SortDefault(sort = "title", direction = Sort.Direction.DESC)
+                                                   }) Pageable pageable,
+                                                   WebRequest request) {
+
+        LOGGER.debug("************** getAllBooks **************");
+        Slice<Book> pageBooks = bookService.findAllV3(pageable);
         ApiResponse response = new ApiResponse(pageBooks, ((ServletWebRequest) request).getRequest().getRequestURI(), HttpStatus.OK);
         return ResponseEntity.ok().body(response);
     }
